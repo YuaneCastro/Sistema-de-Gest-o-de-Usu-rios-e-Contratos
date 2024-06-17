@@ -1,17 +1,12 @@
-body {
-    font-family: Arial, sans-serif;
-    justify-content: center;
-    align-items:center;
-    display: flex;
-    height: 100vh;
-    margin:0;
+body{
     background: rgb(94, 130, 136);
 }
-
 h1 {
-    text-align: center;
+    font-size:2em;
     color:#adcac4;
+    text-align:center;
     text-shadow: 0 5px 10px rgba(0, 0, 0, 0.1), 0 3px 3px rgba(0, 0, 0, 0.08);
+
 }
 a{
     color:#adcac4;
@@ -29,9 +24,11 @@ form {
     border-radius: 10px;
     background: rgb(94, 130, 136);
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 10px 10px rgba(0, 0, 0, 0.22);
+
+
 }
 
-button, input {
+ button, input {
     margin-bottom: 15px;
     border-radius: 5px;
 }

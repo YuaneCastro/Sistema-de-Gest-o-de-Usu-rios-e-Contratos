@@ -3,7 +3,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const { updateUser, findUserById, findUserByEmail } = require('./db'); // Certifique-se de que a função findUserByEmail está importada
+const { createUser, updateUser, findUserByEmail, deleteUser } = require('./db');
 require('dotenv').config();
 
 const app = express();
@@ -33,7 +33,6 @@ function authenticateToken(req, res, next) {
 app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'login', 'login.html'));
 });
-
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -53,40 +52,67 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// Rota de Atualização (GET)
-app.get('/atualizar', authenticateToken, (req, res) => {
-    res.sendFile(path.join(__dirname, 'atualizar', 'atualizar.html'));
+app.get('/cadastro', (req, res) => {
+  res.sendFile(path.join(__dirname, 'cadastro', 'cadastro.html'));
+});
+app.post('/cadastro', async (req, res) => {
+  const { primeiro_nome, ultimo_nome, email, senha } = req.body;
+
+  try {
+      const newUser = await createUser({ primeiro_nome, ultimo_nome, email, senha });
+      if (!newUser) {
+          return res.status(400).send('Erro ao cadastrar usuário');
+      }
+      res.redirect('/login');
+  } catch (error) {
+      console.error('Erro ao cadastrar usuário:', error);
+      res.status(500).send('Erro no servidor ao cadastrar usuário');
+  }
 });
 
-app.post('/atualizar', authenticateToken, async (req, res) => {
-    const userId = req.user.id;
-    const { primeiro_nome, ultimo_nome, email, senha } = req.body;
+app.get('/configuracoes', authenticateToken, (req, res) => {
+  res.sendFile(path.join(__dirname, 'configuracoes', 'configuracoes.html'));
+});
+app.post('/configuracoes', authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+  const { primeiro_nome, ultimo_nome, email, senha } = req.body;
 
-    try {
-        // Atualiza os dados do usuário no banco de dados
-        const updatedUser = await updateUser(userId, { primeiro_nome, ultimo_nome, email, senha });
-        if (!updatedUser) {
-            return res.status(404).send('Usuário não encontrado');
-        }
-        // Redireciona de volta à página de atualização com mensagem de sucesso
-        res.redirect('/atualizar?updated=true');
-    } catch (error) {
-        console.error('Erro ao atualizar dados do usuário:', error);
-        res.status(500).send('Erro ao atualizar dados do usuário');
+  try {
+    const updatedUser = await updateUser(userId, { primeiro_nome, ultimo_nome, email, senha });
+    if (!updatedUser) {
+      return res.status(404).send('Usuário não encontrado');
     }
+    res.redirect('/configuracoes?updated=true');
+  } catch (error) {
+    console.error('Erro ao atualizar dados do usuário:', error);
+    res.status(500).send('Erro ao atualizar dados do usuário');
+  }
+});
+
+app.post('/delete', authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    await deleteUser(userId);
+    res.clearCookie('token');
+    res.redirect('/login');
+  } catch (error) {
+    console.error('Erro ao deletar usuário:', error);
+    res.status(500).send('Erro ao deletar usuário');
+  }
 });
 
 app.get('/tela-principal', authenticateToken, (req, res) => {
-    res.sendFile(path.join(__dirname, 'tela-principal', 'tela-principal.html'));
+  res.sendFile(path.join(__dirname, 'tela-principal', 'tela-principal.html'));
 });
 
 app.get('/logout', (req, res) => {
-    res.clearCookie('token');
-    res.redirect('/login');
+  res.clearCookie('token');
+  res.redirect('/login');
 });
 
 app.get('/', (req, res) => {
-    res.redirect('/login');
+  res.redirect('/login');
 });
 
 app.listen(PORT, () => {

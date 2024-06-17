@@ -1,43 +1,55 @@
 body {
     font-family: Arial, sans-serif;
-    display: flex;
     justify-content: center;
-    align-items: center;
+    align-items:center;
+    display: flex;
     height: 100vh;
-    background-color: #f0f0f0;
+    margin:0;
+    background: rgb(94, 130, 136);
 }
 
 h1 {
     font-size:2em;
-    color:#18b091;
+    color:#adcac4;
     text-align:center;
-}
+    text-shadow: 0 5px 10px rgba(0, 0, 0, 0.1), 0 3px 3px rgba(0, 0, 0, 0.08);
 
+}
+a{
+    color:#adcac4;
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    text-decoration: none;
+}
 form {
-    background: rgb(20, 160, 192);
+    display: flex;
+    flex-direction: column; /* Alinha os elementos do formulário verticalmente */
+    max-width: 300px;
+    margin: 0 auto;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    
+    background: rgb(94, 130, 136);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 10px 10px rgba(0, 0, 0, 0.22);
+
+
 }
 
-input {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
+ button, input {
+    margin-bottom: 15px;
     border-radius: 5px;
 }
 
-button {
-    width: 100%;
+input, button {
     padding: 10px;
+    font-size: 16px;
+}
+button {
     background-color: #2c3137;
+    cursor: pointer;
     color: white;
     border: none;
-    border-radius: 5px;
-    cursor: pointer;
+    
 }
 
 button:hover {

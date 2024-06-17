@@ -23,7 +23,6 @@ const createUser = async ({ primeiro_nome, ultimo_nome, email, senha }) => {
         throw error;
     }
 };
-
 // Função para encontrar um usuário pelo email
 const findUserByEmail = async (email) => {
     const query = 'SELECT * FROM tbl_Usuario WHERE email = $1';
@@ -36,7 +35,6 @@ const findUserByEmail = async (email) => {
         throw error;
     }
 };
-
 // Função para encontrar um usuário pelo ID
 const findUserById = async (id) => {
     const query = 'SELECT * FROM tbl_Usuario WHERE user_id = $1';
@@ -49,7 +47,6 @@ const findUserById = async (id) => {
         throw error;
     }
 };
-
 // Função para atualizar informações do usuário
 const updateUser = async (id, { primeiro_nome, ultimo_nome, email, senha }) => {
     const hashedPassword = await bcrypt.hash(senha, 10);
@@ -63,11 +60,22 @@ const updateUser = async (id, { primeiro_nome, ultimo_nome, email, senha }) => {
         throw error;
     }
 };
+// Função para deletar um usuário
+const deleteUser = async (id) => {
+  const query = 'DELETE FROM tbl_Usuario WHERE user_id = $1';
+
+  try {
+    await pool.query(query, [id]);
+  } catch (error) {
+    throw error;
+  }
+};
 
 module.exports = {
     createUser,
     findUserByEmail,
     findUserById,
-    updateUser
+    updateUser,
+    deleteUser
 };
 
