@@ -7,26 +7,17 @@
     <link rel="stylesheet" href="styles-cadastro.css">
 </head>
 <body>
-    <div>
-        <h1>Cadastro</h1>
-        <form action="/cadastro" method="POST">
-            <label for="primeiro_nome">Primeiro Nome</label>
-            <input type="text" id="primeiro_nome" name="primeiro_nome" required><br>
-    
-            <label for="ultimo_nome">Último Nome</label>
-            <input type="text" id="ultimo_nome" name="ultimo_nome" required><br>
-    
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required><br>
-    
-            <label for="senha">Senha</label>
-            <input type="password" id="senha" name="senha" required><br>
-    
-            <button type="submit">Cadastrar</button>
-        </form>
-        <a href="/login">Ja possui um conta</a>
-    </div>
-   
+    <h2>Cadastro</h2>
+    <form action="/cadastro" method="POST">
+        <label for="username">Username:</label><br>
+        <input type="text" id="username" name="username" required><br><br>
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email" required><br><br>
+        <label for="senha">Senha:</label><br>
+        <input type="password" id="senha" name="senha" required><br><br>
+        <button type="submit">Cadastrar</button>
+    </form>
+    <a href="/login">Já tenho uma conta</a>
     <script src="script-cadastro.js"></script>
 </body>
 </html>

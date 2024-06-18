@@ -3,12 +3,13 @@ body {
     justify-content: center;
     align-items:center;
     display: flex;
+    flex-direction: column;
     height: 100vh;
     margin:0;
     background: rgb(94, 130, 136);
 }
 
-h1 {
+h2 {
     font-size:2em;
     color:#adcac4;
     text-align:center;

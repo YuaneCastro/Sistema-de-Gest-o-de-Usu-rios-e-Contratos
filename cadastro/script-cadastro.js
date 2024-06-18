@@ -1,8 +1,7 @@
 document.getElementById('cadastroForm').addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    const primeiro_nome = document.getElementById('primeiro_nome').value;
-    const ultimo_nome = document.getElementById('ultimo_nome').value;
+    const username = document.getElementById('username').value;
     const email = document.getElementById('email').value;
     const senha = document.getElementById('senha').value;
 
@@ -12,7 +11,7 @@ document.getElementById('cadastroForm').addEventListener('submit', async functio
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ primeiro_nome, ultimo_nome, email, senha })
+            body: JSON.stringify({ username, email, senha })
         });
         const data = await response.json();
         if (response.ok) {

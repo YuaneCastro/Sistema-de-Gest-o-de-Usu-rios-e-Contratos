@@ -5,6 +5,7 @@ body {
     display: flex;
     height: 100vh;
     margin:0;
+    flex-direction: column;
     background: rgb(94, 130, 136);
 }
 
