@@ -1,13 +1,21 @@
 const express = require('express');
+const session = require('express-session');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const { createContracto, listContratosByUserId, updateContrato, deleteContrato, createUser, updateUser, findUserByEmail, deleteUser} = require('./db');
+const { createContracto, listContratosByUserId, updateContrato, deleteContrato, createUser, updateUser, findUserByEmail, deleteUser, getLogsByUserId } = require('./db');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Configuração do middleware de sessão
+app.use(session({
+    secret: 'sua_chave_secreta_aqui',
+    resave: false,
+    saveUninitialized: true,
+}));
 
 app.use(express.static(path.join(__dirname)));
 app.use(cookieParser());
@@ -30,12 +38,12 @@ function authenticateToken(req, res, next) {
         next();
     });
 }
-//----------------------usuario--------------------------------------
+//--------------------entrada----------------
 app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'login', 'login.html'));
 });
 app.post('/login', async (req, res) => {
-  const { email, senha } = req.body;
+    const { email, senha } = req.body;
     try {
         // Verificação de credenciais e geração do token JWT
         const user = await findUserByEmail(email);
@@ -43,6 +51,9 @@ app.post('/login', async (req, res) => {
         if (!user || !bcrypt.compareSync(senha, user.senha)) {
             return res.status(401).send('Email ou senha incorretos');
         }
+
+        // Definir userId na sessão
+        req.session.userId = user.user_id;
 
         const token = jwt.sign({ id: user.user_id, email: user.email }, process.env.TOKEN_SECRET);
         res.cookie('token', token, { httpOnly: true });
@@ -52,12 +63,11 @@ app.post('/login', async (req, res) => {
         res.status(500).send('Erro no servidor ao fazer login');
     }
 });
-
 app.get('/cadastro', (req, res) => {
-  res.sendFile(path.join(__dirname, 'cadastro', 'cadastro.html'));
+    res.sendFile(path.join(__dirname, 'cadastro', 'cadastro.html'));
 });
 app.post('/cadastro', async (req, res) => {
-  const { username, email, senha } = req.body;
+    const { username, email, senha } = req.body;
     try {
         const newUser = await createUser({ username, email, senha });
         if (!newUser) {
@@ -70,39 +80,68 @@ app.post('/cadastro', async (req, res) => {
     }
 });
 
+//--------------tela principal e configuracoes----------------
 app.get('/configuracoes', authenticateToken, (req, res) => {
-  res.sendFile(path.join(__dirname, 'configuracoes', 'configuracoes.html'));
+    res.sendFile(path.join(__dirname, 'configuracoes', 'configuracoes.html'));
 });
 app.post('/configuracoes', authenticateToken, async (req, res) => {
+    const userId = req.user.id;
+    const { username, email, senha } = req.body;
+    try {
+        const updatedUser = await updateUser(userId, { username, email, senha });
+        if (!updatedUser) {
+            return res.status(404).send('Usuário não encontrado');
+        }
+        res.json(updatedUser);
+    } catch (error) {
+        console.error('Erro ao atualizar dados do usuário:', error.message);
+        res.status(500).send(error.message);
+    }
+});
+app.post('/delete', authenticateToken, async (req, res) => {
   const userId = req.user.id;
-  const { username, email, senha } = req.body;
   try {
-      const updatedUser = await updateUser(userId, { username, email, senha });
-      if (!updatedUser) {
-          return res.status(404).send('Usuário não encontrado');
-      }
-      res.redirect('/configuracoes?updated=true');
+      await deleteUser(userId);
+      req.session.destroy((err) => {
+          if (err) {
+              console.error('Erro ao destruir sessão:', err);
+              return res.status(500).send('Erro ao encerrar sessão');
+          }
+          res.clearCookie('token');
+          res.redirect('/login');        
+      });
   } catch (error) {
-      console.error('Erro ao atualizar dados do usuário:', error.message);
+      console.error('Erro ao deletar usuário:', error.message);
       res.status(500).send(error.message);
   }
 });
+app.get('/log-atividades', authenticateToken, async (req, res) => {
+    const userId = req.user.id;
 
-app.post('/delete', authenticateToken, async (req, res) => {
-  const userId = req.user.id;
+    if (!userId) {
+        return res.status(403).json({ error: 'Usuário não autenticado' });
+    }
 
-  try {
-    await deleteUser(userId);
+    try {
+        const logs = await getLogsByUserId(userId);
+        const filteredLogs = logs.map(log => ({
+            tipo_atividade: log.tipo_atividade,
+            data_atividade: log.data_atividade
+        }));
+        res.json(filteredLogs);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+app.get('/tela-principal', authenticateToken, (req, res) => {
+    res.sendFile(path.join(__dirname, 'tela-principal', 'tela-principal.html'));
+});
+app.get('/logout', (req, res) => {
     res.clearCookie('token');
     res.redirect('/login');
-  } catch (error) {
-    console.error('Erro ao deletar usuário:', error);
-    res.status(500).send('Erro ao deletar usuário');
-  }
 });
-//----------------------------------------------------------------------
 
-//--------------------contrato-----------------------------------
+//-------------contrato-------------
 app.get('/criar-contrato', authenticateToken, (req, res) => {
   res.sendFile(path.join(__dirname, 'criar-contrato', 'criar-contrato.html'));
 });
@@ -111,17 +150,16 @@ app.post('/criar-contrato', authenticateToken, async (req, res) => {
   const { titulo } = req.body;
 
   try {
-    const newContract = await createContracto(userId, titulo);
-    if (!newContract) {
-      return res.status(400).send('Erro ao criar contrato');
-    }
-    res.redirect('/configuracoes');
+      const newContract = await createContracto(userId, titulo);
+      if (!newContract) {
+          return res.status(400).send('Erro ao criar contrato');
+      }
+      res.redirect('/configuracoes');
   } catch (error) {
-    console.error('Erro ao criar contrato:', error);
-    res.status(500).send('Erro no servidor ao criar contrato');
+      console.error('Erro ao criar contrato:', error);
+      res.status(500).send('Erro no servidor ao criar contrato');
   }
 });
-
 app.get('/listar-contratos', authenticateToken, async (req, res) => {
   const userId = req.user.id;
 
@@ -133,7 +171,6 @@ app.get('/listar-contratos', authenticateToken, async (req, res) => {
       res.status(500).send('Erro ao listar contratos');
   }
 });
-
 app.put('/atualizar-contratos/:contratoId', authenticateToken, async (req, res) => {
   const userId = req.user.id;
   const contratoId = req.params.contratoId;
@@ -150,7 +187,6 @@ app.put('/atualizar-contratos/:contratoId', authenticateToken, async (req, res) 
       res.status(500).send('Erro ao atualizar contrato');
   }
 });
-
 app.delete('/deletar-contratos/:contratoId', authenticateToken, async (req, res) => {
   const userId = req.user.id;
   const contratoId = req.params.contratoId;
@@ -166,21 +202,12 @@ app.delete('/deletar-contratos/:contratoId', authenticateToken, async (req, res)
       res.status(500).send('Erro ao deletar contrato');
   }
 });
-//-------------------------------------------------------------------
 
-app.get('/tela-principal', authenticateToken, (req, res) => {
-  res.sendFile(path.join(__dirname, 'tela-principal', 'tela-principal.html'));
-});
 
-app.get('/logout', (req, res) => {
-  res.clearCookie('token');
-  res.redirect('/login');
-});
 
 app.get('/', (req, res) => {
-  res.redirect('/login');
+    res.redirect('/login');
 });
-
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
 });

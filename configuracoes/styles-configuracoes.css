@@ -8,6 +8,12 @@ h1 {
     text-shadow: 0 5px 10px rgba(0, 0, 0, 0.1), 0 3px 3px rgba(0, 0, 0, 0.08);
 
 }
+h2{
+    font-size:2em;
+    color:#adcac4;
+    text-align:center;
+    text-shadow: 0 5px 10px rgba(0, 0, 0, 0.1), 0 3px 3px rgba(0, 0, 0, 0.08);
+}
 a{
     color:#adcac4;
     display: block;
@@ -47,4 +53,18 @@ button {
 
 button:hover {
     background-color: #12355a;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+table, th, td {
+    border: 1px solid black;
+}
+th, td {
+    padding: 8px;
+    text-align: left;
+}
+th {
+    background-color: #f2f2f2;
 }

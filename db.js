@@ -12,72 +12,61 @@ const pool = new Pool({
 
 //-----------------usuario-------------------------------
 const createUser = async ({ username, email, senha }) => {
-  const hashedPassword = await bcrypt.hash(senha, 10);
+    const hashedPassword = await bcrypt.hash(senha, 10);
 
-  // Verifica se o username já existe
-  const usernameExists = await checkIfUsernameExists(username);
-  if (usernameExists) {
-      throw new Error('Username já está em uso');
-  }
+    // Verifica se o username já existe
+    const usernameExists = await checkIfUsernameExists(username);
+    if (usernameExists) {
+        throw new Error('Username já está em uso');
+    }
 
-  // Verifica se o email já existe
-  const emailExists = await checkIfEmailExists(email);
-  if (emailExists) {
-      throw new Error('Email já está em uso');
-  }
+    // Verifica se o email já existe
+    const emailExists = await checkIfEmailExists(email);
+    if (emailExists) {
+        throw new Error('Email já está em uso');
+    }
 
-  const query = 'INSERT INTO tbl_Usuario (username, email, senha) VALUES ($1, $2, $3) RETURNING *';
-  const values = [username, email, hashedPassword];
+    const query = 'INSERT INTO tbl_usuario (username, email, senha) VALUES ($1, $2, $3) RETURNING *';
+    const values = [username, email, hashedPassword];
 
-  try {
-      const { rows } = await pool.query(query, values);
-      return rows[0];
-  } catch (error) {
-      throw error;
-  }
+    try {
+        const { rows } = await pool.query(query, values);
+        await logAtividade(rows[0].user_id, 'Usuário criado');
+        return rows[0];
+    } catch (error) {
+        throw error;
+    }
 };
 const findUserByEmail = async (email) => {
-  const query = 'SELECT * FROM tbl_Usuario WHERE email = $1';
-  const values = [email];
+    const query = 'SELECT * FROM tbl_Usuario WHERE email = $1';
+    const values = [email];
 
-  try {
-      const { rows } = await pool.query(query, values);
-      return rows[0];
-  } catch (error) {
-      throw error;
-  }
+    try {
+        const { rows } = await pool.query(query, values);
+        return rows[0];
+    } catch (error) {
+        throw error;
+    }
 };
 const findUserById = async (id) => {
-  const query = 'SELECT * FROM tbl_Usuario WHERE user_id = $1';
-  const values = [id];
+    const query = 'SELECT * FROM tbl_Usuario WHERE user_id = $1';
+    const values = [id];
 
-  try {
-      const { rows } = await pool.query(query, values);
-      return rows[0];
-  } catch (error) {
-      throw error;
-  }
+    try {
+        const { rows } = await pool.query(query, values);
+        return rows[0];
+    } catch (error) {
+        throw error;
+    }
 };
 const updateUser = async (id, { username, email, senha }) => {
   const hashedPassword = await bcrypt.hash(senha, 10);
 
-  // Verifica se o username já existe, exceto para o próprio usuário sendo atualizado
-  const usernameExists = await checkIfUsernameExists(username);
-  if (usernameExists && !(await findUserById(id)).username === username) {
-      throw new Error('Username já está em uso');
-  }
-
-  // Verifica se o email já existe, exceto para o próprio usuário sendo atualizado
-  const emailExists = await checkIfEmailExists(email);
-  if (emailExists && !(await findUserById(id)).email === email) {
-      throw new Error('Email já está em uso');
-  }
-
-  const query = 'UPDATE tbl_Usuario SET username = $1, email = $2, senha = $3 WHERE user_id = $4 RETURNING *';
-  const values = [username, email, hashedPassword, id];
-
   try {
+      const query = 'UPDATE tbl_usuario SET username = $1, email = $2, senha = $3 WHERE user_id = $4 RETURNING *';
+      const values = [username, email, hashedPassword, id];
       const { rows } = await pool.query(query, values);
+      await logAtividade(id, 'Usuário atualizado');
       return rows[0];
   } catch (error) {
       throw error;
@@ -95,64 +84,112 @@ const deleteUser = async (id) => {
   }
 };
 const checkIfUsernameExists = async (username) => {
-  const query = 'SELECT * FROM tbl_Usuario WHERE username = $1';
-  const values = [username];
+    const query = 'SELECT * FROM tbl_Usuario WHERE username = $1';
+    const values = [username];
 
-  try {
-      const { rows } = await pool.query(query, values);
-      return rows.length > 0;
-  } catch (error) {
-      throw error;
-  }
+    try {
+        const { rows } = await pool.query(query, values);
+        return rows.length > 0;
+    } catch (error) {
+        throw error;
+    }
 };
 const checkIfEmailExists = async (email) => {
-  const query = 'SELECT * FROM tbl_Usuario WHERE email = $1';
-  const values = [email];
+    const query = 'SELECT * FROM tbl_Usuario WHERE email = $1';
+    const values = [email];
+
+    try {
+        const { rows } = await pool.query(query, values);
+        return rows.length > 0;
+    } catch (error) {
+        throw error;
+    }
+};
+//----------------contrato---------------------------
+const createContracto = async (id_user, titulo) => {
+    const query = 'INSERT INTO tbl_contrato (id_user, titulo) VALUES ($1, $2) RETURNING *';
+    const values = [id_user, titulo];
+
+    try {
+        const { rows } = await pool.query(query, values);
+        await logAtividade(id_user, `Contrato criado: ${titulo}`);
+        return rows[0];
+    } catch (error) {
+        throw error;
+    }
+};
+const listContratosByUserId = async (userId) => {
+    try {
+        const query = 'SELECT * FROM tbl_contrato WHERE id_user = $1';
+        const { rows } = await pool.query(query, [userId]);
+        return rows;
+    } catch (error) {
+        throw error;
+    }
+};
+const updateContrato = async (userId, contratoId, titulo) => {
+    try {
+        const query = 'UPDATE tbl_contrato SET titulo = $1 WHERE contrato_id = $2 AND id_user = $3 RETURNING *';
+        const { rows } = await pool.query(query, [titulo, contratoId, userId]);
+        await logAtividade(userId, `Contrato atualizado: ${titulo}`);
+        return rows[0];
+    } catch (error) {
+        throw error;
+    }
+};
+const deleteContrato = async (userId, contratoId) => {
+    try {
+        const query = 'DELETE FROM tbl_contrato WHERE contrato_id = $1 AND id_user = $2 RETURNING *';
+        const { rows } = await pool.query(query, [contratoId, userId]);
+        await logAtividade(userId, `Contrato deletado: ID ${contratoId}`);
+        return rows[0];
+    } catch (error) {
+        throw error;
+    }
+};
+
+//----------------log de atividades---------------------------
+const logAtividade = async (userId, tipoAtividade) => {
+  const query = 'INSERT INTO tbl_logatividade (id_user, tipo_atividade, data_atividade) VALUES ($1, $2, current_timestamp)';
+  const values = [userId, tipoAtividade];
 
   try {
-      const { rows } = await pool.query(query, values);
-      return rows.length > 0;
+      await pool.query(query, values);
   } catch (error) {
       throw error;
   }
 };
-
-//----------------contrato---------------------------
-const createContracto = async (id_user, titulo) => {
-  const query = 'INSERT INTO tbl_contrato (id_user, titulo) VALUES ($1, $2) RETURNING *';
-  const values = [id_user, titulo];
+const getLogsByUserId = async (userId) => {
+  const query = 'SELECT tipo_atividade, data_atividade FROM tbl_logatividade WHERE id_user = $1';
+  const values = [userId];
 
   try {
-    const { rows } = await pool.query(query, values);
-    return rows[0];
-  } catch (error) {
-    throw error;
-  }
-};
-const listContratosByUserId = async (userId) => {
-  try {
-      const query = 'SELECT * FROM tbl_contrato WHERE id_user = $1';
-      const { rows } = await pool.query(query, [userId]);
+      const { rows } = await pool.query(query, values);
       return rows;
   } catch (error) {
       throw error;
   }
 };
-const updateContrato = async (userId, contratoId, titulo) => {
+const insertLog = async (id_user, tipo_atividade) => {
+  // Verifique se o id_user existe na tabela tbl_usuario
+  const userExistsQuery = 'SELECT user_id FROM tbl_usuario WHERE user_id = $1';
+  const userExistsValues = [id_user];
+
   try {
-      const query = 'UPDATE tbl_contrato SET titulo = $1 WHERE contrato_id = $2 AND id_user = $3 RETURNING *';
-      const { rows } = await pool.query(query, [titulo, contratoId, userId]);
-      return rows[0];
+      const { rows } = await pool.query(userExistsQuery, userExistsValues);
+
+      if (rows.length === 0) {
+          throw new Error(`Usuário com id ${id_user} não encontrado`);
+      }
+
+      // Realize a inserção na tabela tbl_logatividade
+      const insertQuery = 'INSERT INTO tbl_logatividade (id_user, tipo_atividade, data_atividade) VALUES ($1, $2, CURRENT_TIMESTAMP)';
+      const insertValues = [id_user, tipo_atividade];
+
+      await pool.query(insertQuery, insertValues);
+      console.log('Log de atividade inserido com sucesso.');
   } catch (error) {
-      throw error;
-  }
-};
-const deleteContrato = async (userId, contratoId) => {
-  try {
-      const query = 'DELETE FROM tbl_contrato WHERE contrato_id = $1 AND id_user = $2 RETURNING *';
-      const { rows } = await pool.query(query, [contratoId, userId]);
-      return rows[0];
-  } catch (error) {
+      console.error('Erro ao inserir log de atividade:', error.message);
       throw error;
   }
 };
@@ -167,6 +204,8 @@ module.exports = {
     updateContrato,
     deleteContrato,
     checkIfUsernameExists,
-    checkIfEmailExists
+    checkIfEmailExists,
+    logAtividade,
+    getLogsByUserId,
+    insertLog
 };
-
