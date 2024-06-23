@@ -25,55 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Pega os elementos <span> que fecham os modais
     var closeButtons = document.getElementsByClassName("close");
-    const form = document.getElementById('update-form');
-    const messageDiv = document.getElementById('update-message');
-    const modal = document.getElementById('updateModal');
-    const closeButton = document.querySelector('.close');
 
-    form.addEventListener('submit', async (event) => {
-        event.preventDefault(); // Impede o envio padrão do formulário
-
-        const formData = new FormData(form);
-        const data = {
-            username: formData.get('username'),
-            email: formData.get('email')
-        };
-
-        try {
-            const response = await fetch('/configuracoes', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-
-            if (response.ok) {
-                const result = await response.json();
-                messageDiv.innerText = result.message;
-                messageDiv.style.color = 'green';
-                // Bloqueia a interação do usuário enquanto a mensagem é exibida
-                closeButton.style.display = 'none';
-                setTimeout(() => {
-                    messageDiv.innerText = '';
-                    closeButton.style.display = 'block';
-                }, 3000); // Exibe a mensagem por 3 segundos
-            } else {
-                const error = await response.json();
-                messageDiv.innerText = error.error;
-                messageDiv.style.color = 'red';
-            }
-        } catch (error) {
-            messageDiv.innerText = 'Erro ao atualizar usuário';
-            messageDiv.style.color = 'red';
-        }
-    });
-
-    // Permite fechar o modal apenas após a mensagem desaparecer
-    closeButton.addEventListener('click', () => {
-        messageDiv.innerText = '';
-        modal.style.display = 'none';
-    });
     
     // Quando o usuário clicar nos links, abre os modais correspondentes
     logLink.onclick = function() {

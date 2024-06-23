@@ -176,40 +176,6 @@ button {
     transform: translateY(-5px);
 }
 
-.modal {
-    display: none; /* Oculto por padrão */
-    position: fixed; /* Fica em cima da página */
-    z-index: 1; /* Senta no topo */
-    left: 0;
-    top: 0;
-    width: 100%; /* Largura completa */
-    height: 100%; /* Altura completa */
-    overflow: auto; /* Ativa o scroll se necessário */
-    background-color: rgb(0,0,0); /* Cor de fundo */
-    background-color: rgba(0,0,0,0.4); /* Fundo com opacidade */
-}
-
-.modal-content {
-    background-color: #fefefe;
-    margin: 15% auto; /* 15% do topo e centralizado */
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%; /* Pode ser ajustado conforme necessário */
-}
-
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
 
 
 @media (max-width: 1200px) {

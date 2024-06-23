@@ -25,6 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Pega os elementos <span> que fecham os modais
     var closeButtons = document.getElementsByClassName("close");
+
+    document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('update-form');
     const messageDiv = document.getElementById('update-message');
     const modal = document.getElementById('updateModal');
@@ -74,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
         messageDiv.innerText = '';
         modal.style.display = 'none';
     });
-    
+});
     // Quando o usuário clicar nos links, abre os modais correspondentes
     logLink.onclick = function() {
         openModal(logModal);

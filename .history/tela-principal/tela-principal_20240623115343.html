@@ -65,7 +65,6 @@
             <input type="email" id="email" name="email" required><br><br>
             <button type="submit">Atualizar</button>
         </form>
-        <div id="update-message" style="display:none; color: green;"></div>
     </div>
 </div>
 
@@ -91,6 +90,49 @@
     <div class="contratos-list" id="contratos-list">
         <!-- Aqui serão inseridos os contratos dinamicamente -->
     </div>
+
+    <!-- Adicione links para scripts externos, se necessário -->
+    <script>
+        // Função para carregar os contratos na página
+        async function carregarContratos() {
+            try {
+                const response = await fetch('/contratos');
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar contratos');
+                }
+                const contratos = await response.json();
+                const contratosList = document.getElementById('contratos-list');
+
+                // Limpa a lista atual
+                contratosList.innerHTML = '';
+
+                // Adiciona cada contrato como um item de lista
+                contratos.forEach((contrato) => {
+                    const contratoItem = document.createElement('div');
+                    contratoItem.classList.add('contrato-item');
+                    contratoItem.innerHTML = `
+                        <strong>${contrato.titulo}</strong> - Criado em ${new Date(contrato.data_criacao).toLocaleDateString()}
+                        <p>Outras informações do contrato...</p>
+                    `;
+                    contratoItem.addEventListener('click', () => {
+                        alert(`Contrato: ${contrato.titulo}`);
+                    });
+                    contratosList.appendChild(contratoItem);
+                });
+            } catch (error) {
+                console.error('Erro ao carregar contratos:', error.message);
+                // Tratar erro: exibir mensagem de erro para o usuário se necessário
+            }
+        }
+
+        // Carregar contratos ao iniciar a página
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarContratos();
+        });
+    </script>
+
+
     <script src="script-principal.js"></script>
 </body>
 </html>
+

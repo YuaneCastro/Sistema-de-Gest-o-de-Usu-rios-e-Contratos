@@ -1,0 +1,32 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background: rgb(94, 130, 136);
+    justify-content: center;
+    align-items: center;
+}
+
+.contratos-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.contrato-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.btn {
+    display: inline-block;
+    background-color: #263546;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    margin-right: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}

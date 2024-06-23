@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tela Principal</title>
+    <link rel="stylesheet" href="/tela-principal/styles-principal.css">
+</head>
+<body>
+    <div class="top-bar">
+        <p id="criar-contrato-link" class="clickable">Novo Contrato</p>
+        <p id="manage-account-link" class="clickable">Gerir Conta</p>
+        <p id="ajuda-link" class="clickable">Ajuda</p>
+        <p id="log-atividades-link" class="clickable">Log de Atividades</p>
+    </div>
+
+    <div id="criar-contrato-screen" class="screen">
+        <button id="criar-contrato-back-button" class="round-button">Voltar</button>
+        <h2>Informações do Contrato</h2>
+        <form id="criar-contrato-form">
+            <label for="titulo">Título:</label>
+            <input type="text" id="titulo" name="titulo" required>
+            <label for="data-termino">Data de Término:</label>
+            <input type="date" id="data-termino" name="data-termino" required>
+
+            <h2>Informações das Partes Envolvidas</h2>
+            <div class="flex-container">
+                <div class="flex-item">
+                    <h3>Parte Contratante</h3>
+                    <label for="contratante-nome">Nome/Firma:</label>
+                    <input type="text" id="contratante-nome" name="contratante-nome" required>
+                    <label for="contratante-nif">NIF/N.BI:</label>
+                    <input type="text" id="contratante-nif" name="contratante-nif" required>
+                    <label for="contratante-endereco">Endereço:</label>
+                    <input type="text" id="contratante-endereco" name="contratante-endereco" required>
+                </div>
+                <div class="flex-item">
+                    <h3>Parte Contratada</h3>
+                    <label for="contratado-nome">Nome/Firma:</label>
+                    <input type="text" id="contratado-nome" name="contratado-nome" required>
+                    <label for="contratado-nif">NIF/N.BI:</label>
+                    <input type="text" id="contratado-nif" name="contratado-nif" required>
+                    <label for="contratado-endereco">Endereço:</label>
+                    <input type="text" id="contratado-endereco" name="contratado-endereco" required>
+                </div>
+            </div>
+            <button type="submit">Próximo</button>
+        </form>
+    </div>
+
+    <div id="update-screen" class="screen">
+        <button id="update-back-button" class="round-button">Voltar</button>
+        <h1>Atualizar Informações</h1>
+        <label for="new-user">Novo Usuário:</label>
+        <input type="text" id="new-user">
+        <br>
+        <label for="change-password">Alterar Senha:</label>
+        <input type="password" id="change-password">
+        <br>
+        <button id="update-button">Atualizar</button>
+    </div>
+    <h1>Lista de Contratos</h1>
+    <ul class="contratos-list" id="contratos-list">
+        <!-- Aqui serão inseridos os contratos dinamicamente -->
+    </ul>
+    <script src="script-principal.js"></script>
+</body>
+</html>
+

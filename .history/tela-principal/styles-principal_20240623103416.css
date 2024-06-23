@@ -1,0 +1,117 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 0;
+    margin: 0;
+}
+
+.top-bar {
+    background-color: white;
+    color: #263546;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.top-bar p {
+    margin: 0 10px;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+    color: #263546;
+}
+
+.top-bar p:hover {
+    opacity: 0.8;
+}
+
+.flex-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.flex-item {
+    flex: 1;
+    padding: 10px;
+}
+
+.round-button {
+    margin-bottom: 10px;
+    padding: 8px 16px;
+    background-color: #263546;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.contratos-list {
+    list-style-type: none;
+    padding: 0;
+    width: 80%;
+}
+
+.contrato-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+}
+
+.clickable {
+    cursor: pointer;
+    color: #007bff;
+    text-decoration: underline;
+}
+
+.screen {
+    display: none;
+    position: absolute;
+    background-color: rgb(41, 25, 91);
+    padding: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 10px;
+}
+
+.screen.active {
+    display: block;
+}
+
+button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#update-screen input {
+    margin-bottom: 10px;
+    padding: 5px;
+    font-size: 16px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.round-button {
+    border-radius: 50%;
+    padding: 10px;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+body.show-help-screen #help-screen,
+body.show-update-screen #update-screen {
+    display: block;
+}
+
+body.show-help-screen #help-screen {
+    z-index: 10;
+}
+
+body.show-update-screen #update-screen {
+    z-index: 20;
+}

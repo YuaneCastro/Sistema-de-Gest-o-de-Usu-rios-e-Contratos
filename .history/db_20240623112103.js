@@ -59,16 +59,18 @@ const findUserById = async (id) => {
         throw error;
     }
 };
-const updateUser = async (id, { username, email }) => {
-    try {
-        const query = 'UPDATE tbl_usuario SET username = $1, email = $2 WHERE user_id = $3 RETURNING *';
-        const values = [username, email, id];
-        const { rows } = await pool.query(query, values);
-        await logAtividade(id, 'Usuário atualizado');
-        return rows[0];
-    } catch (error) {
-        throw error;
-    }
+const updateUser = async (id, { username, email, senha }) => {
+  const hashedPassword = await bcrypt.hash(senha, 10);
+
+  try {
+      const query = 'UPDATE tbl_usuario SET username = $1, email = $2, senha = $3 WHERE user_id = $4 RETURNING *';
+      const values = [username, email, hashedPassword, id];
+      const { rows } = await pool.query(query, values);
+      await logAtividade(id, 'Usuário atualizado');
+      return rows[0];
+  } catch (error) {
+      throw error;
+  }
 };
 const deleteUser = async (id) => {
   const query = 'DELETE FROM tbl_Usuario WHERE user_id = $1 RETURNING *';
@@ -142,12 +144,10 @@ const createContracto = async (id_user, titulo, contratante, contratado) => {
         client.release();
     }
 };
-const listContratosByUserId = async (userId) => {
-    const query = 'SELECT * FROM tbl_contrato WHERE id_user = $1';
-    const values = [userId];
-
+/const listContratosByUserId = async (userId) => {
     try {
-        const { rows } = await pool.query(query, values);
+        const query = 'SELECT * FROM tbl_contrato WHERE id_user = $1';
+        const { rows } = await pool.query(query, [userId]);
         return rows;
     } catch (error) {
         throw error;

@@ -51,30 +51,44 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 const result = await response.json();
                 messageDiv.innerText = result.message;
-                messageDiv.style.color = 'green';
-                // Bloqueia a interação do usuário enquanto a mensagem é exibida
-                closeButton.style.display = 'none';
+                messageDiv.style.display = 'block';
                 setTimeout(() => {
-                    messageDiv.innerText = '';
-                    closeButton.style.display = 'block';
+                    messageDiv.style.display = 'none';
+                    closeModal();
                 }, 3000); // Exibe a mensagem por 3 segundos
             } else {
                 const error = await response.json();
                 messageDiv.innerText = error.error;
                 messageDiv.style.color = 'red';
+                messageDiv.style.display = 'block';
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 3000); // Exibe a mensagem por 3 segundos
             }
         } catch (error) {
             messageDiv.innerText = 'Erro ao atualizar usuário';
             messageDiv.style.color = 'red';
+            messageDiv.style.display = 'block';
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 3000); // Exibe a mensagem por 3 segundos
         }
     });
 
-    // Permite fechar o modal apenas após a mensagem desaparecer
-    closeButton.addEventListener('click', () => {
-        messageDiv.innerText = '';
+    closeButton.addEventListener('click', closeModal);
+
+    function closeModal() {
         modal.style.display = 'none';
-    });
-    
+    }
+
+    // Função para abrir o modal
+    function openModal() {
+        modal.style.display = 'block';
+    }
+
+    // Supondo que você tenha um botão ou um link para abrir o modal
+    const openModalButton = document.getElementById('openModalButton');
+    openModalButton.addEventListener('click', openModal);
     // Quando o usuário clicar nos links, abre os modais correspondentes
     logLink.onclick = function() {
         openModal(logModal);

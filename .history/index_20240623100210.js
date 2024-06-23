@@ -84,21 +84,18 @@ app.post('/cadastro', async (req, res) => {
 app.get('/configuracoes', authenticateToken, (req, res) => {
     res.sendFile(path.join(__dirname, 'configuracoes', 'configuracoes.html'));
 });
-// Endpoint para atualizar informações do usuário
 app.post('/configuracoes', authenticateToken, async (req, res) => {
-    const userId = req.user.id; // ID do usuário autenticado
-    const { username, email } = req.body; // Dados do formulário
-
+    const userId = req.user.id;
+    const { username, email, senha } = req.body;
     try {
-        const updatedUser = await updateUser(userId, { username, email });
-        if (updatedUser) {
-            res.status(200).json({ message: 'Usuário atualizado com sucesso' });
-        } else {
-            res.status(404).json({ error: 'Usuário não encontrado ou dados não atualizados' });
+        const updatedUser = await updateUser(userId, { username, email, senha });
+        if (!updatedUser) {
+            return res.status(404).send('Usuário não encontrado');
         }
+        res.json(updatedUser);
     } catch (error) {
-        console.error('Erro ao atualizar usuário:', error.message);
-        res.status(500).json({ error: 'Erro ao atualizar usuário' });
+        console.error('Erro ao atualizar dados do usuário:', error.message);
+        res.status(500).send(error.message);
     }
 });
 app.post('/delete', authenticateToken, async (req, res) => {
@@ -145,20 +142,6 @@ app.get('/logout', (req, res) => {
 });
 
 //-------------contrato-------------
-// Rota para buscar todos os contratos do usuário autenticado
-app.get('/contratos', authenticateToken, async (req, res) => {
-    const userId = req.user.id; // Obtém o ID do usuário autenticado
-
-    try {
-        const contratos = await listContratosByUserId(userId); // Busca os contratos do usuário
-
-        // Envia os contratos encontrados como resposta
-        res.status(200).json(contratos);
-    } catch (error) {
-        console.error('Erro ao buscar contratos:', error.message);
-        res.status(500).json({ error: 'Erro ao buscar contratos' });
-    }
-});
 app.get('/criar-contrato', authenticateToken, (req, res) => {
   res.sendFile(path.join(__dirname, 'criar-contrato', 'criar-contrato.html'));
 });
@@ -178,15 +161,15 @@ app.post('/criar-contrato', authenticateToken, async (req, res) => {
   }
 });
 app.get('/listar-contratos', authenticateToken, async (req, res) => {
-    const userId = req.user.id;
+  const userId = req.user.id;
 
-    try {
-        const contratos = await listContratosByUserId(userId);
-        res.status(200).json(contratos);
-    } catch (error) {
-        console.error('Erro ao listar contratos:', error);
-        res.status(500).send('Erro ao listar contratos');
-    }
+  try {
+      const contratos = await listContratosByUserId(userId);
+      res.status(200).json(contratos);
+  } catch (error) {
+      console.error('Erro ao listar contratos:', error);
+      res.status(500).send('Erro ao listar contratos');
+  }
 });
 app.put('/atualizar-contratos/:contratoId', authenticateToken, async (req, res) => {
   const userId = req.user.id;

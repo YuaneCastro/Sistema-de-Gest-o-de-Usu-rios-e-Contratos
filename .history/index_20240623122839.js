@@ -89,9 +89,7 @@ app.post('/configuracoes', authenticateToken, async (req, res) => {
     const userId = req.user.id; // ID do usuário autenticado
     const { username, email } = req.body; // Dados do formulário
 
-    try {
-        const updatedUser = await updateUser(userId, { username, email });
-        if (updatedUser) {
+   if (updatedUser) {
             res.status(200).json({ message: 'Usuário atualizado com sucesso' });
         } else {
             res.status(404).json({ error: 'Usuário não encontrado ou dados não atualizados' });
@@ -101,6 +99,7 @@ app.post('/configuracoes', authenticateToken, async (req, res) => {
         res.status(500).json({ error: 'Erro ao atualizar usuário' });
     }
 });
+
 app.post('/delete', authenticateToken, async (req, res) => {
   const userId = req.user.id;
   try {

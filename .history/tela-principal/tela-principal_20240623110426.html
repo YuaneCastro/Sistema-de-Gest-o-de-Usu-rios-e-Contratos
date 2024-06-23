@@ -14,9 +14,8 @@
         <p id="log-atividades-link" class="clickable">Log de Atividades</p>
     </div>
 
-    <div id="contratoModal" class="modal">
-        <div class="modal-content">
-        <span class="close">&times;</span>
+    <div id="contrato-screen" class="screen">
+        <button id="contrato-back-button" class="round-button">Voltar</button>
         <h2>Informações do Contrato</h2>
         <div class="input-group">
             <input type="text" id="titulo" placeholder="Título">
@@ -39,11 +38,9 @@
         </div>
         <button id="next-button">Próximo</button>
     </div>
-    </div>
-    
-<div id="helpModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
+
+    <div id="help-screen" class="screen">
+        <button id="back-button" class="round-button">Voltar</button>
         <h1>Definições de Conta</h1>
         <p id="update-info-link" class="clickable">Atualizar Informações</p>
         <p>Subscrição</p>
@@ -52,12 +49,8 @@
         <p>Outras Opções</p>
         <button id="logout-button">Terminar Sessão</button>
     </div>
-</div>
-
-<!-- Modal para Atualização de Informações -->
-<div id="updateModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
+    <div id="update-screen" class="screen">
+        <button id="update-back-button" class="round-button">Voltar</button>
         <form action="/configuracoes" method="POST" id="update-form">
             <label for="username">Username:</label><br>
             <input type="text" id="username" name="username" required><br><br>
@@ -65,12 +58,9 @@
             <input type="email" id="email" name="email" required><br><br>
             <button type="submit">Atualizar</button>
         </form>
-        <div id="update-message" style="display:none; color: green;"></div>
     </div>
-</div>
 
-     <!-- Modal -->
-     <div id="logModal" class="modal">
+    <div id="logModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <table id="logTable">
@@ -87,10 +77,12 @@
         </div>
     </div>
 
-    <h1>Lista de Contratos</h1>
-    <div class="contratos-list" id="contratos-list">
-        <!-- Aqui serão inseridos os contratos dinamicamente -->
-    </div>
+<h1>Lista de Contratos</h1>
+<div class="contratos-list" id="contratos-list">
+    <!-- Aqui serão inseridos os contratos dinamicamente -->
+</div>
+
     <script src="script-principal.js"></script>
 </body>
 </html>
+

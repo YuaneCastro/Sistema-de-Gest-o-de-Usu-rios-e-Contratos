@@ -59,16 +59,18 @@ const findUserById = async (id) => {
         throw error;
     }
 };
-const updateUser = async (id, { username, email }) => {
-    try {
-        const query = 'UPDATE tbl_usuario SET username = $1, email = $2 WHERE user_id = $3 RETURNING *';
-        const values = [username, email, id];
-        const { rows } = await pool.query(query, values);
-        await logAtividade(id, 'Usuário atualizado');
-        return rows[0];
-    } catch (error) {
-        throw error;
-    }
+const updateUser = async (id, { username, email, senha }) => {
+  const hashedPassword = await bcrypt.hash(senha, 10);
+
+  try {
+      const query = 'UPDATE tbl_usuario SET username = $1, email = $2, senha = $3 WHERE user_id = $4 RETURNING *';
+      const values = [username, email, hashedPassword, id];
+      const { rows } = await pool.query(query, values);
+      await logAtividade(id, 'Usuário atualizado');
+      return rows[0];
+  } catch (error) {
+      throw error;
+  }
 };
 const deleteUser = async (id) => {
   const query = 'DELETE FROM tbl_Usuario WHERE user_id = $1 RETURNING *';
@@ -104,50 +106,22 @@ const checkIfEmailExists = async (email) => {
     }
 };
 //----------------contrato---------------------------
-const createContracto = async (id_user, titulo, contratante, contratado) => {
-    const client = await pool.connect();
-    try {
-        await client.query('BEGIN');
-        
-        // Criar o contrato
-        const contratoQuery = 'INSERT INTO tbl_contrato (id_user, titulo) VALUES ($1, $2) RETURNING contrato_id';
-        const contratoValues = [id_user, titulo];
-        const { rows: contratoRows } = await client.query(contratoQuery, contratoValues);
-        const contratoId = contratoRows[0].contrato_id;
-
-        // Adicionar ou atualizar contratante
-        const contratanteQuery = 'INSERT INTO tbl_contratante (nome, nif, endereco) VALUES ($1, $2, $3) RETURNING contratante_id';
-        const contratanteValues = [contratante.nome, contratante.nif, contratante.endereco];
-        const { rows: contratanteRows } = await client.query(contratanteQuery, contratanteValues);
-        const contratanteId = contratanteRows[0].contratante_id;
-
-        // Adicionar ou atualizar contratado
-        const contratadoQuery = 'INSERT INTO tbl_contratado (nome, nif, endereco) VALUES ($1, $2, $3) RETURNING contratado_id';
-        const contratadoValues = [contratado.nome, contratado.nif, contratado.endereco];
-        const { rows: contratadoRows } = await client.query(contratadoQuery, contratadoValues);
-        const contratadoId = contratadoRows[0].contratado_id;
-
-        // Relacionar contrato com contratante e contratado
-        const partesQuery = 'INSERT INTO tbl_contrato_partes (contrato_id, contratante_id, contratado_id) VALUES ($1, $2, $3)';
-        const partesValues = [contratoId, contratanteId, contratadoId];
-        await client.query(partesQuery, partesValues);
-
-        await client.query('COMMIT');
-        await logAtividade(id_user, `Contrato criado: ${titulo}`);
-        return { contratoId, contratanteId, contratadoId };
-    } catch (error) {
-        await client.query('ROLLBACK');
-        throw error;
-    } finally {
-        client.release();
-    }
-};
-const listContratosByUserId = async (userId) => {
-    const query = 'SELECT * FROM tbl_contrato WHERE id_user = $1';
-    const values = [userId];
+const createContracto = async (id_user, titulo) => {
+    const query = 'INSERT INTO tbl_contrato (id_user, titulo) VALUES ($1, $2) RETURNING *';
+    const values = [id_user, titulo];
 
     try {
         const { rows } = await pool.query(query, values);
+        await logAtividade(id_user, `Contrato criado: ${titulo}`);
+        return rows[0];
+    } catch (error) {
+        throw error;
+    }
+};
+const listContratosByUserId = async (userId) => {
+    try {
+        const query = 'SELECT * FROM tbl_contrato WHERE id_user = $1';
+        const { rows } = await pool.query(query, [userId]);
         return rows;
     } catch (error) {
         throw error;

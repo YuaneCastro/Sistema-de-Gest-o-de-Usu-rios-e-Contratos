@@ -101,6 +101,7 @@ app.post('/configuracoes', authenticateToken, async (req, res) => {
         res.status(500).json({ error: 'Erro ao atualizar usuário' });
     }
 });
+
 app.post('/delete', authenticateToken, async (req, res) => {
   const userId = req.user.id;
   try {

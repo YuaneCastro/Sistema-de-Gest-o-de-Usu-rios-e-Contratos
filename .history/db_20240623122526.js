@@ -70,6 +70,7 @@ const updateUser = async (id, { username, email }) => {
         throw error;
     }
 };
+
 const deleteUser = async (id) => {
   const query = 'DELETE FROM tbl_Usuario WHERE user_id = $1 RETURNING *';
   const values = [id];
